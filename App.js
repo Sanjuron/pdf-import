@@ -3,11 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Input, ThemeProvider } from 'react-native-elements';
 
 /// Import from 'react-native-pdf-lib'
-import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
+// import PDFLib, {  PDFDocument, PDFPage } from 'react-native-pdf-lib';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import download from 'downloadjs';
-  
+
+import location from "./doc/location.pdf"
  
-import pdfdoc from './doc/location.pdf';
 
 
 export default function App() {
@@ -26,36 +27,53 @@ export default function App() {
     setModel(val)
   }
 
-   async function createPdf(props) {
+   async function createPdf() {
 
 // Modify first page in document
-const page1 = PDFPage
-  .modify(0)
-  .drawText(lastname, {
-    x: 5,
-    y: 235,
-    color: '#F62727',
-  })
-  .drawRectangle({
-    x: 150,
-    y: 150,
-    width: 50,
-    height: 50,
-    color: '#81C744',
-  });
- 
- 
-const existingPDF = pdfdoc;
-console.log(existingPDF);
-PDFDocument
-  .modify(existingPDF)
-  .modifyPages(page1)
-  .write() // Returns a promise that resolves with the PDF's path
-  .then(path => {
-    console.log('PDF modified at: ' + path);
-  });
 
-  const pdfBytes = await existingPDF.save()
+ 
+  const url = location;
+  console.log(url);
+  const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
+  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  console.log(pdfDoc);
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+     const pages = pdfDoc.getPages()
+      const firstPage = pages[0]
+      const secondPage = pages[1]
+      const fifthPage = pages[4]
+      const eighthPage = pages[7]
+
+      // Get the width and height of the first page
+      const { width, height } = firstPage.getSize()
+      console.log(width);
+      console.log(height);
+
+      // Draw a string of text diagonally across the first page
+
+      eighthPage.drawText(lastname, {
+        x: 461,
+        y: 160,
+        size: 16,
+        font: helveticaFont,
+        color: rgb(0, 0, 0),
+      })
+
+
+
+
+      const pdfBytes = await pdfDoc.save()
+
+// PDFDocument
+//   .modify(existingPDF)
+//   .modifyPages(page1)
+//   .write() // Returns a promise that resolves with the PDF's path
+//   .then(path => {
+//     console.log('PDF modified at: ' + path);
+//   });
+
+//   const pdfBytes = await existingPDF.save()
 
   download(pdfBytes, "contrat-de-location.pdf", "application/pdf");
 

@@ -17,7 +17,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.sanjuron.pdf",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.sanjuron.pdf",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
